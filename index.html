@@ -189,10 +189,64 @@ function stopLoop(){cancelAnimationFrame(raf);raf=null}
 async function openCamera(){try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});if(url)URL.revokeObjectURL(url);video.srcObject=stream;fname='camera_recording.webm';live=true;duration=0;totalFrames=0;await video.play();startLoop();$('startRec').disabled=false;$('stopRec').disabled=true;$('process').disabled=true;setTimeout(()=>{if(video.videoWidth){const R=roi();setRoi(Math.round(video.videoWidth/2),Math.round(video.videoHeight/2),R.r)}},400);updateStatus('Câmera aberta. Ajuste a ROI e inicie a gravação.')}catch(e){alert('Não foi possível abrir a câmera. Use HTTPS/GitHub Pages e permita o acesso.\\n'+e.message)}}
 function closeCamera(){if(recording)stopRecording();stopAcquisition();if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}live=false;stopLoop();$('startRec').disabled=true;$('stopRec').disabled=true;updateStatus('Câmera fechada.')}
 
-function startRecording(){if(!stream){alert('Abra a câmera primeiro.');return}results=[];$('tableWrap').innerHTML='';drawPlot();chunks=[];try{recorder=new MediaRecorder(stream,{mimeType:'video/webm'})}catch(e){recorder=new MediaRecorder(stream)}
-const startMs=performance.now();recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-recorder.onstop=()=>{const blob=new Blob(chunks,{type:'video/webm'});if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);video.srcObject=null;video.src=url;video.load();live=false;recording=false;stopLoop();fname='camera_recording.webm';video.onloadedmetadata=async()=>{duration=Number.isFinite(video.duration)&&video.duration>0?video.duration:(performance.now()-startMs)/1000;setDefaults();$('process').disabled=false;await goFrame(0);updateStatus('Gravação finalizada. Você já pode exportar o CSV coletado ou reprocessar por intervalo.')}};
-recorder.start();recording=true;$('startRec').disabled=true;$('stopRec').disabled=false;startAcquisition();updateStatus('Gravando e atualizando gráfico em tempo real...')}
+async function startRecording(){
+if(!stream){alert('Abra a câmera primeiro.');return}
+
+/* Corrige nova gravação após parar/exportar:
+   o vídeo gravado substitui a câmera; antes de nova aquisição,
+   recolocamos o stream da câmera no elemento de vídeo. */
+stopAcquisition();
+if(url){URL.revokeObjectURL(url);url=null}
+video.pause();
+video.removeAttribute('src');
+video.srcObject=stream;
+live=true;
+duration=0;
+totalFrames=0;
+await video.play();
+startLoop();
+
+results=[];
+$('tableWrap').innerHTML='';
+drawPlot();
+$('exportCsv').disabled=true;
+$('rLive').textContent='—';
+$('gLive').textContent='—';
+$('bLive').textContent='—';
+
+chunks=[];
+try{recorder=new MediaRecorder(stream,{mimeType:'video/webm'})}catch(e){recorder=new MediaRecorder(stream)}
+const startMs=performance.now();
+recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+recorder.onstop=()=>{
+  const blob=new Blob(chunks,{type:'video/webm'});
+  if(url)URL.revokeObjectURL(url);
+  url=URL.createObjectURL(blob);
+  video.srcObject=null;
+  video.src=url;
+  video.load();
+  live=false;
+  recording=false;
+  stopLoop();
+  fname='camera_recording.webm';
+  video.onloadedmetadata=async()=>{
+    duration=Number.isFinite(video.duration)&&video.duration>0?video.duration:(performance.now()-startMs)/1000;
+    setDefaults();
+    $('process').disabled=false;
+    await goFrame(0);
+    drawPlot();
+    drawTable();
+    updateStatus('Gravação finalizada. O CSV coletado continua disponível. Para nova medida, clique em Iniciar gravação novamente.');
+  };
+};
+recorder.start();
+recording=true;
+$('startRec').disabled=true;
+$('stopRec').disabled=false;
+$('process').disabled=true;
+startAcquisition();
+updateStatus('Nova gravação iniciada: RGB e gráfico online atualizando...');
+}
 function stopRecording(){if(recorder&&recording){stopAcquisition();recorder.stop();$('startRec').disabled=false;$('stopRec').disabled=true;updateStatus('Finalizando gravação...')}}
 
 function startAcquisition(){stopAcquisition();fps=num($('fps').value,30);liveStartMs=performance.now();liveFrameCounter=0;const delay=Math.max(10,1000/fps);acquisitionTimer=setInterval(()=>{const row=measureFrame(liveFrameCounter);if(!row)return;row.frame=liveFrameCounter;row.time_s=(performance.now()-liveStartMs)/1000;results.push(row);$('rLive').textContent=fmt(row.R_mean,1);$('gLive').textContent=fmt(row.G_mean,1);$('bLive').textContent=fmt(row.B_mean,1);$('exportCsv').disabled=false;liveFrameCounter++;if(liveFrameCounter%2===0)drawPlot();updateStatus('Gravando: RGB sendo coletado e gráfico atualizado.')},delay)}
@@ -234,7 +288,7 @@ $('slider').oninput=()=>goFrame(num($('slider').value,0))
 $('setIni').onclick=()=>{$('f0').value=currentFrame;$('t0').value=(currentFrame/fps).toFixed(3)}
 $('setFim').onclick=()=>{$('f1').value=currentFrame;$('t1').value=(currentFrame/fps).toFixed(3)}
 $('process').onclick=processInterval;$('exportCsv').onclick=exportCSV;
-$('clearAll').onclick=()=>{results=[];$('tableWrap').innerHTML='';drawPlot();$('exportCsv').disabled=true;updateStatus('Conjunto limpo.')}
+$('clearAll').onclick=()=>{results=[];$('tableWrap').innerHTML='';drawPlot();$('exportCsv').disabled=true;$('rLive').textContent='—';$('gLive').textContent='—';$('bLive').textContent='—';updateStatus('Conjunto limpo. A câmera continua pronta para nova gravação.')}
 setRoi(365,380,35);draw();updateStatus();
 </script>
 </body>
