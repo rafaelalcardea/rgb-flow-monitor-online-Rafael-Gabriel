@@ -3,269 +3,140 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RGB Flow Monitor</title>
+  <title>RGB Flow Monitor - Camera ROI</title>
   <style>
-    :root {
-      --bg: #f6f8fa;
-      --panel: #ffffff;
-      --border: #d0d7de;
-      --text: #24292f;
-      --muted: #57606a;
-      --accent: #0969da;
-      --ok: #1a7f37;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    header {
-      padding: 16px 22px;
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-    }
-    header h1 { margin: 0 0 6px 0; font-size: 24px; }
-    header p { margin: 0; color: var(--muted); font-size: 14px; }
-    main {
-      display: grid;
-      grid-template-columns: 330px 1fr;
-      gap: 14px;
-      padding: 14px;
-    }
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px;
-    }
-    .panel h2 {
-      margin: 0 0 10px 0;
-      font-size: 17px;
-    }
-    label {
-      display: block;
-      font-size: 13px;
-      margin: 9px 0 4px;
-      color: var(--text);
-    }
-    input[type="number"], input[type="file"] {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: #fff;
-    }
-    input[type="range"] { width: 100%; }
-    button {
-      width: 100%;
-      margin-top: 8px;
-      padding: 9px 10px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: #fff;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    button.primary {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-    button.success {
-      background: var(--ok);
-      color: #fff;
-      border-color: var(--ok);
-    }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .radio-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-top: 6px;
-      font-size: 14px;
-    }
-    .radio-row label { display: inline; margin: 0; }
-    .small {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.35;
-    }
-    .info {
-      margin-top: 8px;
-      padding: 8px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: #f6f8fa;
-      font-size: 12px;
-      white-space: pre-line;
-    }
-    .workspace {
-      display: grid;
-      grid-template-rows: auto auto;
-      gap: 14px;
-    }
-    .canvas-wrap {
-      width: 100%;
-      overflow: auto;
-      background: #111;
-      border-radius: 8px;
-      padding: 8px;
-      min-height: 360px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    canvas#displayCanvas {
-      max-width: 100%;
-      height: auto;
-      background: #000;
-      cursor: crosshair;
-    }
-    canvas#plotCanvas {
-      width: 100%;
-      height: 260px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-      margin-top: 8px;
-    }
-    th, td {
-      border: 1px solid var(--border);
-      padding: 5px;
-      text-align: right;
-    }
-    th { background: #f6f8fa; }
-    th:first-child, td:first-child { text-align: left; }
-    footer {
-      padding: 10px 16px 18px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    @media (max-width: 900px) {
-      main { grid-template-columns: 1fr; }
-    }
+    :root { --bg:#f6f8fa; --panel:#fff; --border:#d0d7de; --text:#24292f; --muted:#57606a; --accent:#0969da; --ok:#1a7f37; --danger:#cf222e; --warn:#9a6700; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--text); }
+    header { padding:16px 22px; background:var(--panel); border-bottom:1px solid var(--border); }
+    header h1 { margin:0 0 6px; font-size:24px; }
+    header p { margin:0; color:var(--muted); font-size:14px; }
+    main { display:grid; grid-template-columns:350px 1fr; gap:14px; padding:14px; }
+    .panel { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:14px; }
+    h2 { margin:0 0 10px; font-size:17px; }
+    label { display:block; font-size:13px; margin:9px 0 4px; }
+    input, select { width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; background:#fff; }
+    input[type="range"] { padding:0; }
+    button { width:100%; margin-top:8px; padding:9px 10px; border:1px solid var(--border); border-radius:6px; background:#fff; cursor:pointer; font-weight:600; }
+    button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+    button.success { background:var(--ok); color:#fff; border-color:var(--ok); }
+    button.danger { background:var(--danger); color:#fff; border-color:var(--danger); }
+    button.warn { background:var(--warn); color:#fff; border-color:var(--warn); }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .radio-row { display:flex; gap:12px; align-items:center; margin-top:6px; font-size:14px; }
+    .radio-row label { display:inline; margin:0; }
+    .small { font-size:12px; color:var(--muted); line-height:1.35; }
+    .info { margin-top:8px; padding:8px; border:1px solid var(--border); border-radius:6px; background:#f6f8fa; font-size:12px; white-space:pre-line; }
+    .workspace { display:grid; grid-template-rows:auto auto; gap:14px; }
+    .canvas-wrap { width:100%; overflow:auto; background:#111; border-radius:8px; padding:8px; min-height:380px; display:flex; align-items:center; justify-content:center; }
+    canvas#displayCanvas { max-width:100%; height:auto; background:#000; cursor:crosshair; }
+    canvas#plotCanvas { width:100%; height:260px; background:#fff; border:1px solid var(--border); border-radius:8px; }
+    table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+    th,td { border:1px solid var(--border); padding:5px; text-align:right; }
+    th { background:#f6f8fa; }
+    th:first-child,td:first-child { text-align:left; }
+    footer { padding:10px 16px 18px; color:var(--muted); font-size:12px; }
+    @media (max-width: 920px) { main { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
-  <header>
-    <h1>RGB Flow Monitor</h1>
-    <p>Extração de sinais RGB de vídeos de análise em fluxo. O processamento é local no navegador; o vídeo não é enviado para servidores.</p>
-  </header>
+<header>
+  <h1>RGB Flow Monitor</h1>
+  <p>Câmera, gravação, seleção de ROI circular e extração de sinais RGB em vídeos de análise em fluxo.</p>
+</header>
 
-  <main>
-    <section class="panel">
-      <h2>1. Vídeo</h2>
-      <input id="videoInput" type="file" accept="video/*" />
-      <div id="videoInfo" class="info">Nenhum vídeo carregado.</div>
+<main>
+  <section class="panel">
+    <h2>1. Fonte de vídeo</h2>
+    <button id="openCameraBtn" class="primary">Abrir câmera</button>
+    <button id="startRecBtn" class="success" disabled>Iniciar gravação</button>
+    <button id="stopRecBtn" class="danger" disabled>Parar gravação</button>
+    <label for="videoInput">Ou carregar vídeo salvo</label>
+    <input id="videoInput" type="file" accept="video/*" />
+    <div id="videoInfo" class="info">Nenhuma câmera ou vídeo carregado.</div>
 
-      <h2 style="margin-top:18px">2. Intervalo</h2>
-      <div class="radio-row">
-        <input id="modeTime" type="radio" name="mode" value="time" checked />
-        <label for="modeTime">Tempo (s)</label>
-        <input id="modeFrames" type="radio" name="mode" value="frames" />
-        <label for="modeFrames">Frames</label>
-      </div>
+    <h2 style="margin-top:18px">2. ROI circular</h2>
+    <button id="unlockRoiBtn" class="warn">Selecionar/mover ROI</button>
+    <button id="lockRoiBtn">Travar ROI</button>
+    <div class="row">
+      <div><label for="roiX">Centro x (px)</label><input id="roiX" type="number" value="365" step="1" /></div>
+      <div><label for="roiY">Centro y (px)</label><input id="roiY" type="number" value="380" step="1" /></div>
+    </div>
+    <label for="roiR">Raio da ROI (px)</label>
+    <input id="roiR" type="number" value="35" min="1" step="1" />
+    <input id="roiSlider" type="range" value="35" min="5" max="250" step="1" />
+    <div class="row">
+      <button id="decreaseRoiBtn">Diminuir ROI</button>
+      <button id="increaseRoiBtn">Expandir ROI</button>
+    </div>
+    <button id="defaultRoiBtn">Usar ROI padrão: x=365, y=380, r=35</button>
+    <div id="roiInfo" class="info">ROI padrão: x = 365; y = 380; r = 35 px.</div>
+    <p class="small">Com a ROI destravada, clique e arraste o círculo na tela. Use o controle de raio ou os botões para expandir/diminuir.</p>
 
-      <label for="fpsInput">FPS usado no cálculo</label>
-      <input id="fpsInput" type="number" value="30" min="1" step="0.001" />
-      <div class="small">Use 30 para vídeos gravados a 30 quadros por segundo. O navegador nem sempre informa o FPS real do arquivo.</div>
+    <h2 style="margin-top:18px">3. Intervalo</h2>
+    <div class="radio-row">
+      <input id="modeTime" type="radio" name="mode" value="time" checked><label for="modeTime">Tempo (s)</label>
+      <input id="modeFrames" type="radio" name="mode" value="frames"><label for="modeFrames">Frames</label>
+    </div>
+    <label for="fpsInput">FPS usado no cálculo</label>
+    <input id="fpsInput" type="number" value="30" min="1" step="0.001" />
+    <div class="row">
+      <div><label for="startTime">Tempo inicial (s)</label><input id="startTime" type="number" value="0" min="0" step="0.001"></div>
+      <div><label for="endTime">Tempo final (s)</label><input id="endTime" type="number" value="0" min="0" step="0.001"></div>
+    </div>
+    <div class="row">
+      <div><label for="startFrame">Frame inicial</label><input id="startFrame" type="number" value="0" min="0" step="1"></div>
+      <div><label for="endFrame">Frame final</label><input id="endFrame" type="number" value="0" min="0" step="1"></div>
+    </div>
+    <button id="setStartBtn">Frame atual como início</button>
+    <button id="setEndBtn">Frame atual como final</button>
 
-      <div class="row">
-        <div>
-          <label for="startTime">Tempo inicial (s)</label>
-          <input id="startTime" type="number" value="0" min="0" step="0.001" />
-        </div>
-        <div>
-          <label for="endTime">Tempo final (s)</label>
-          <input id="endTime" type="number" value="0" min="0" step="0.001" />
-        </div>
-      </div>
+    <h2 style="margin-top:18px">4. Processamento</h2>
+    <button id="processBtn" class="primary" disabled>Processar intervalo</button>
+    <button id="exportBtn" class="success" disabled>Exportar CSV</button>
+    <div id="processInfo" class="info">Aguardando processamento.</div>
+    <p class="small">O processamento exporta todos os frames do intervalo. Não há busca de picos ou máximos.</p>
+  </section>
 
-      <div class="row">
-        <div>
-          <label for="startFrame">Frame inicial</label>
-          <input id="startFrame" type="number" value="0" min="0" step="1" />
-        </div>
-        <div>
-          <label for="endFrame">Frame final</label>
-          <input id="endFrame" type="number" value="0" min="0" step="1" />
-        </div>
-      </div>
+  <section class="workspace">
+    <div class="panel">
+      <h2>Visualização</h2>
+      <label for="frameSlider">Navegar pelos frames do vídeo gravado/carregado</label>
+      <input id="frameSlider" type="range" min="0" max="0" value="0" />
+      <div id="currentInfo" class="small">Frame atual: 0 | Tempo: 0,000 s</div>
+      <div class="canvas-wrap"><canvas id="displayCanvas"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>RGB em função do tempo</h2>
+      <canvas id="plotCanvas" width="1100" height="260"></canvas>
+      <div id="tableWrap"></div>
+    </div>
+  </section>
+</main>
 
-      <button id="setStartBtn">Usar frame atual como início</button>
-      <button id="setEndBtn">Usar frame atual como final</button>
+<footer>
+  RGB Flow Monitor. O vídeo é processado localmente no navegador. Para usar câmera, abra a página em HTTPS, como no GitHub Pages.
+</footer>
 
-      <h2 style="margin-top:18px">3. ROI circular</h2>
-      <div class="row">
-        <div>
-          <label for="roiX">Centro x (px)</label>
-          <input id="roiX" type="number" value="365" step="1" />
-        </div>
-        <div>
-          <label for="roiY">Centro y (px)</label>
-          <input id="roiY" type="number" value="380" step="1" />
-        </div>
-      </div>
-      <label for="roiR">Raio (px)</label>
-      <input id="roiR" type="number" value="35" min="1" step="1" />
-      <button id="applyRoiBtn">Aplicar ROI</button>
-      <div id="roiInfo" class="info">ROI padrão: x = 365; y = 380; r = 35 px.</div>
-
-      <h2 style="margin-top:18px">4. Processamento</h2>
-      <button id="processBtn" class="primary" disabled>Processar intervalo</button>
-      <button id="exportBtn" class="success" disabled>Exportar CSV</button>
-      <div id="processInfo" class="info">Aguardando processamento.</div>
-      <p class="small">O software exporta todos os frames do intervalo selecionado. Não há busca de picos, máximos ou replicatas.</p>
-    </section>
-
-    <section class="workspace">
-      <div class="panel">
-        <h2>Visualização do vídeo</h2>
-        <label for="frameSlider">Navegar pelos frames</label>
-        <input id="frameSlider" type="range" min="0" max="0" value="0" />
-        <div id="currentInfo" class="small">Frame atual: 0 | Tempo: 0,000 s</div>
-        <div class="canvas-wrap">
-          <canvas id="displayCanvas"></canvas>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>RGB em função do tempo</h2>
-        <canvas id="plotCanvas" width="1100" height="260"></canvas>
-        <div id="tableWrap"></div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    RGB Flow Monitor. Desenvolvido para processamento de vídeos de quimiluminescência e extração de sinais RGB em sistemas de análise em fluxo.
-  </footer>
-
-  <video id="video" style="display:none" muted playsinline></video>
-  <canvas id="hiddenCanvas" style="display:none"></canvas>
+<video id="video" style="display:none" muted playsinline></video>
+<canvas id="hiddenCanvas" style="display:none"></canvas>
 
 <script>
-const videoInput = document.getElementById('videoInput');
 const video = document.getElementById('video');
+const videoInput = document.getElementById('videoInput');
 const displayCanvas = document.getElementById('displayCanvas');
 const displayCtx = displayCanvas.getContext('2d');
 const hiddenCanvas = document.getElementById('hiddenCanvas');
-const hiddenCtx = hiddenCanvas.getContext('2d', { willReadFrequently: true });
+const hiddenCtx = hiddenCanvas.getContext('2d', { willReadFrequently:true });
 const plotCanvas = document.getElementById('plotCanvas');
 const plotCtx = plotCanvas.getContext('2d');
 
+const openCameraBtn = document.getElementById('openCameraBtn');
+const startRecBtn = document.getElementById('startRecBtn');
+const stopRecBtn = document.getElementById('stopRecBtn');
+const processBtn = document.getElementById('processBtn');
+const exportBtn = document.getElementById('exportBtn');
 const videoInfo = document.getElementById('videoInfo');
 const roiInfo = document.getElementById('roiInfo');
 const processInfo = document.getElementById('processInfo');
@@ -279,358 +150,159 @@ const endFrame = document.getElementById('endFrame');
 const roiX = document.getElementById('roiX');
 const roiY = document.getElementById('roiY');
 const roiR = document.getElementById('roiR');
-const processBtn = document.getElementById('processBtn');
-const exportBtn = document.getElementById('exportBtn');
+const roiSlider = document.getElementById('roiSlider');
 const tableWrap = document.getElementById('tableWrap');
 
-let videoName = '';
-let videoURL = null;
-let fps = 30;
-let totalFrames = 0;
+let fps = 30, totalFrames = 0, durationS = 0, currentFrame = 0;
+let displayScale = 1, videoName = '', videoURL = null, cameraStream = null;
+let mediaRecorder = null, recChunks = [], isLive = false, isRecording = false;
+let roiLocked = false, draggingROI = false;
 let results = [];
-let currentFrame = 0;
-let displayScale = 1;
+let animationId = null;
 
-function fmt(x, n=3) {
-  if (!Number.isFinite(x)) return '';
-  return x.toFixed(n).replace('.', ',');
-}
+function fmt(x,n=3){ return Number.isFinite(x) ? x.toFixed(n).replace('.', ',') : ''; }
+function mode(){ return document.querySelector('input[name="mode"]:checked').value; }
+function getROI(){ return { x:Math.round(+roiX.value||0), y:Math.round(+roiY.value||0), r:Math.max(1,Math.round(+roiR.value||1)) }; }
+function setROI(x,y,r){ roiX.value=Math.round(x); roiY.value=Math.round(y); if(r!==undefined){ roiR.value=Math.round(r); roiSlider.value=Math.round(r); } updateROIInfo(); }
+function updateFPS(){ fps = +fpsInput.value || 30; if(durationS>0){ totalFrames = Math.max(1, Math.floor(durationS*fps)); frameSlider.max = Math.max(0,totalFrames-1); } }
+function setIntervalDefaults(){ updateFPS(); startTime.value='0'; endTime.value=durationS ? durationS.toFixed(3) : '0'; startFrame.value='0'; endFrame.value=Math.max(0,totalFrames-1); }
+function updateROIInfo(){ const r=getROI(); const area=Math.PI*r.r*r.r; roiInfo.textContent=`ROI ${roiLocked?'travada':'destravada'}\nCentro: x = ${r.x}; y = ${r.y}\nRaio: ${r.r} px\nÁrea aproximada: ${area.toFixed(2)} px²`; drawFrame(); }
+function updateVideoInfo(extra=''){ videoInfo.textContent = `Fonte: ${videoName||'câmera/vídeo'}\nResolução: ${video.videoWidth||0} x ${video.videoHeight||0} px\nDuração: ${durationS?durationS.toFixed(3):'--'} s\nFPS usado: ${fps}\n${extra}`; }
 
-function updateFps() {
-  fps = Number(fpsInput.value) || 30;
-  if (video.duration && Number.isFinite(video.duration)) {
-    totalFrames = Math.max(0, Math.floor(video.duration * fps));
-    frameSlider.max = Math.max(0, totalFrames - 1);
-    endFrame.value = Math.max(0, totalFrames - 1);
-    endTime.value = video.duration.toFixed(3);
-  }
-}
+function startDrawLoop(){ cancelAnimationFrame(animationId); function loop(){ drawFrame(); animationId=requestAnimationFrame(loop); } loop(); }
+function stopDrawLoop(){ cancelAnimationFrame(animationId); animationId=null; }
 
-function getMode() {
-  return document.querySelector('input[name="mode"]:checked').value;
-}
-
-function getIntervalFrames() {
-  updateFps();
-  let s, e;
-  if (getMode() === 'time') {
-    const t0 = Number(String(startTime.value).replace(',', '.')) || 0;
-    const t1 = Number(String(endTime.value).replace(',', '.')) || 0;
-    s = Math.round(t0 * fps);
-    e = Math.round(t1 * fps);
-  } else {
-    s = Math.round(Number(startFrame.value) || 0);
-    e = Math.round(Number(endFrame.value) || 0);
-  }
-  s = Math.max(0, s);
-  e = Math.min(Math.max(0, totalFrames - 1), e);
-  return [s, e];
-}
-
-function getROI() {
-  return {
-    x: Math.round(Number(roiX.value) || 0),
-    y: Math.round(Number(roiY.value) || 0),
-    r: Math.max(1, Math.round(Number(roiR.value) || 1))
-  };
-}
-
-function updateROIInfo() {
-  const roi = getROI();
-  const area = Math.PI * roi.r * roi.r;
-  roiInfo.textContent = `Centro: x = ${roi.x}; y = ${roi.y}\nRaio: ${roi.r} px\nÁrea geométrica aproximada: ${area.toFixed(2)} px²`;
-  drawCurrentFrame();
-}
-unction setVideoTimeByFrame(frame) {
-  return new Promise((resolve, reject) => {
-    const t = frame / fps;
-    const onSeeked = () => {
-      video.removeEventListener('seeked', onSeeked);
-      resolve();
-    };
-    video.addEventListener('seeked', onSeeked, { once: true });
-    video.currentTime = Math.min(Math.max(0, t), Math.max(0, video.duration || 0));
-    setTimeout(() => {
-      video.removeEventListener('seeked', onSeeked);
-      resolve();
-    }, 600);
-  });
-}
-
-function drawCurrentFrame() {
-  if (!video.videoWidth || !video.videoHeight) return;
-
-  const vw = video.videoWidth;
-  const vh = video.videoHeight;
-  const maxW = Math.min(980, window.innerWidth - 390);
-  const maxH = 560;
-  displayScale = Math.min(maxW / vw, maxH / vh, 1);
-
-  displayCanvas.width = Math.round(vw * displayScale);
-  displayCanvas.height = Math.round(vh * displayScale);
-  displayCtx.drawImage(video, 0, 0, displayCanvas.width, displayCanvas.height);
-
-  const roi = getROI();
-  displayCtx.save();
-  displayCtx.scale(displayScale, displayScale);
-  displayCtx.beginPath();
-  displayCtx.arc(roi.x, roi.y, roi.r, 0, Math.PI * 2);
-  displayCtx.lineWidth = Math.max(2 / displayScale, 1);
-  displayCtx.strokeStyle = 'yellow';
-  displayCtx.stroke();
-  displayCtx.beginPath();
-  displayCtx.arc(roi.x, roi.y, 3, 0, Math.PI * 2);
-  displayCtx.fillStyle = 'yellow';
-  displayCtx.fill();
+function drawFrame(){
+  if(!video.videoWidth || !video.videoHeight) return;
+  const vw=video.videoWidth, vh=video.videoHeight;
+  const maxW=Math.max(420, Math.min(980, window.innerWidth-410));
+  const maxH=570;
+  displayScale=Math.min(maxW/vw, maxH/vh, 1);
+  displayCanvas.width=Math.round(vw*displayScale); displayCanvas.height=Math.round(vh*displayScale);
+  try { displayCtx.drawImage(video,0,0,displayCanvas.width,displayCanvas.height); } catch(e){ return; }
+  const r=getROI();
+  displayCtx.save(); displayCtx.scale(displayScale,displayScale);
+  displayCtx.beginPath(); displayCtx.arc(r.x,r.y,r.r,0,Math.PI*2);
+  displayCtx.lineWidth=Math.max(2/displayScale,1); displayCtx.strokeStyle=roiLocked?'#00ff66':'yellow'; displayCtx.stroke();
+  displayCtx.beginPath(); displayCtx.arc(r.x,r.y,4,0,Math.PI*2); displayCtx.fillStyle=roiLocked?'#00ff66':'yellow'; displayCtx.fill();
   displayCtx.restore();
-
-  currentInfo.textContent = `Frame atual: ${currentFrame} | Tempo: ${fmt(currentFrame / fps, 3)} s`;
+  currentInfo.textContent = `Frame atual: ${currentFrame} | Tempo: ${fmt(currentFrame/fps,3)} s | ROI: ${roiLocked?'travada':'destravada'}`;
 }
 
-function computeROIForCurrentFrame(frame) {
-  const vw = video.videoWidth;
-  const vh = video.videoHeight;
-  hiddenCanvas.width = vw;
-  hiddenCanvas.height = vh;
-  hiddenCtx.drawImage(video, 0, 0, vw, vh);
+function seekFrame(frame){
+  return new Promise(resolve=>{
+    const t=Math.min(Math.max(0,frame/fps), Math.max(0,durationS));
+    const onSeeked=()=>{ video.removeEventListener('seeked',onSeeked); resolve(); };
+    video.addEventListener('seeked',onSeeked,{once:true}); video.currentTime=t;
+    setTimeout(()=>{ video.removeEventListener('seeked',onSeeked); resolve(); },700);
+  });
+}
+async function goToFrame(frame){ if(isLive) return; updateFPS(); currentFrame=Math.max(0,Math.min(totalFrames-1,Math.round(frame))); frameSlider.value=currentFrame; await seekFrame(currentFrame); drawFrame(); }
 
-  const roi = getROI();
-  const x0 = Math.max(0, roi.x - roi.r);
-  const y0 = Math.max(0, roi.y - roi.r);
-  const x1 = Math.min(vw - 1, roi.x + roi.r);
-  const y1 = Math.min(vh - 1, roi.y + roi.r);
-  const width = x1 - x0 + 1;
-  const height = y1 - y0 + 1;
-  const img = hiddenCtx.getImageData(x0, y0, width, height).data;
+async function openCamera(){
+  try{
+    if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); }
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' }, audio:false });
+    if(videoURL){ URL.revokeObjectURL(videoURL); videoURL=null; }
+    video.srcObject=cameraStream; videoName='camera_recording'; isLive=true; durationS=0; totalFrames=0; results=[];
+    await video.play(); startDrawLoop();
+    startRecBtn.disabled=false; stopRecBtn.disabled=true; processBtn.disabled=true; exportBtn.disabled=true;
+    updateVideoInfo('Câmera aberta. Clique em Iniciar gravação.'); updateROIInfo();
+  }catch(err){ alert('Não foi possível abrir a câmera. Verifique permissão do navegador e se a página está em HTTPS.\n\n'+err.message); }
+}
 
-  let sr = 0, sg = 0, sb = 0, n = 0;
-  for (let yy = 0; yy < height; yy++) {
-    for (let xx = 0; xx < width; xx++) {
-      const px = x0 + xx;
-      const py = y0 + yy;
-      const dx = px - roi.x;
-      const dy = py - roi.y;
-      if (dx*dx + dy*dy <= roi.r*roi.r) {
-        const idx = (yy * width + xx) * 4;
-        sr += img[idx];
-        sg += img[idx + 1];
-        sb += img[idx + 2];
-        n++;
-      }
-    }
-  }
-  const rm = sr / n;
-  const gm = sg / n;
-  const bm = sb / n;
-  return {
-    video: videoName,
-    frame: frame,
-    time_s: frame / fps,
-    roi_center_x_px: roi.x,
-    roi_center_y_px: roi.y,
-    roi_radius_px: roi.r,
-    roi_n_pixels: n,
-    R_mean: rm,
-    G_mean: gm,
-    B_mean: bm,
-    gray_mean: (rm + gm + bm) / 3
+function startRecording(){
+  if(!cameraStream){ alert('Abra a câmera primeiro.'); return; }
+  recChunks=[]; let opts={mimeType:'video/webm'};
+  try{ mediaRecorder=new MediaRecorder(cameraStream,opts); }catch(e){ mediaRecorder=new MediaRecorder(cameraStream); }
+  mediaRecorder.ondataavailable=e=>{ if(e.data && e.data.size>0) recChunks.push(e.data); };
+  mediaRecorder.onstop=()=>{
+    const blob=new Blob(recChunks,{type:'video/webm'}); if(videoURL) URL.revokeObjectURL(videoURL); videoURL=URL.createObjectURL(blob);
+    stopDrawLoop(); isLive=false; video.srcObject=null; video.src=videoURL; videoName='camera_recording.webm'; video.load();
+    video.onloadedmetadata=async()=>{ durationS=video.duration||0; updateFPS(); setIntervalDefaults(); processBtn.disabled=false; await goToFrame(0); updateVideoInfo('Gravação finalizada e carregada para processamento.'); };
   };
+  mediaRecorder.start(); isRecording=true; startRecBtn.disabled=true; stopRecBtn.disabled=false; processBtn.disabled=true; updateVideoInfo('Gravando...');
 }
+function stopRecording(){ if(mediaRecorder && isRecording){ mediaRecorder.stop(); isRecording=false; startRecBtn.disabled=false; stopRecBtn.disabled=true; updateVideoInfo('Finalizando gravação...'); } }
 
-async function goToFrame(frame) {
-  updateFps();
-  currentFrame = Math.max(0, Math.min(Math.max(0, totalFrames - 1), Math.round(frame)));
-  frameSlider.value = currentFrame;
-  await setVideoTimeByFrame(currentFrame);
-  drawCurrentFrame();
+videoInput.addEventListener('change',()=>{
+  const file=videoInput.files[0]; if(!file) return;
+  if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); cameraStream=null; }
+  stopDrawLoop(); isLive=false;
+  if(videoURL) URL.revokeObjectURL(videoURL); videoURL=URL.createObjectURL(file); videoName=file.name;
+  video.srcObject=null; video.src=videoURL; video.load(); results=[]; exportBtn.disabled=true;
+  video.onloadedmetadata=async()=>{ durationS=video.duration||0; updateFPS(); setIntervalDefaults(); processBtn.disabled=false; startRecBtn.disabled=true; stopRecBtn.disabled=true; await goToFrame(0); updateVideoInfo('Vídeo carregado para processamento.'); };
+});
+
+function getIntervalFrames(){
+  updateFPS(); let s,e;
+  if(mode()==='time'){ s=Math.round((+String(startTime.value).replace(',','.')||0)*fps); e=Math.round((+String(endTime.value).replace(',','.')||0)*fps); }
+  else { s=Math.round(+startFrame.value||0); e=Math.round(+endFrame.value||0); }
+  s=Math.max(0,s); e=Math.min(Math.max(0,totalFrames-1),e); return [s,e];
 }
-
-async function processInterval() {
-  if (!video.src) {
-    alert('Carregue um vídeo antes de processar.');
-    return;
+function computeROI(frame){
+  const vw=video.videoWidth, vh=video.videoHeight, roi=getROI();
+  hiddenCanvas.width=vw; hiddenCanvas.height=vh; hiddenCtx.drawImage(video,0,0,vw,vh);
+  const x0=Math.max(0,roi.x-roi.r), y0=Math.max(0,roi.y-roi.r), x1=Math.min(vw-1,roi.x+roi.r), y1=Math.min(vh-1,roi.y+roi.r);
+  const width=x1-x0+1, height=y1-y0+1, img=hiddenCtx.getImageData(x0,y0,width,height).data;
+  let sr=0,sg=0,sb=0,n=0;
+  for(let yy=0; yy<height; yy++) for(let xx=0; xx<width; xx++){
+    const px=x0+xx, py=y0+yy, dx=px-roi.x, dy=py-roi.y;
+    if(dx*dx+dy*dy <= roi.r*roi.r){ const i=(yy*width+xx)*4; sr+=img[i]; sg+=img[i+1]; sb+=img[i+2]; n++; }
   }
-  updateFps();
-  const [s, e] = getIntervalFrames();
-  if (s > e) {
-    alert('O início do intervalo deve ser menor ou igual ao final.');
-    return;
-  }
-  const roi = getROI();
-  if (roi.x < 0 || roi.y < 0 || roi.x >= video.videoWidth || roi.y >= video.videoHeight) {
-    alert('O centro da ROI está fora do vídeo.');
-    return;
-  }
-
-  processBtn.disabled = true;
-  exportBtn.disabled = true;
-  results = [];
-  tableWrap.innerHTML = '';
-  plotCtx.clearRect(0, 0, plotCanvas.width, plotCanvas.height);
-
-  const total = e - s + 1;
-  for (let frame = s; frame <= e; frame++) {
-    await setVideoTimeByFrame(frame);
-    const row = computeROIForCurrentFrame(frame);
-    results.push(row);
-    if ((frame - s) % 5 === 0 || frame === e) {
-      processInfo.textContent = `Processando... ${frame - s + 1}/${total} frames\nFrame atual: ${frame}`;
-      await new Promise(r => setTimeout(r, 0));
-    }
-  }
-  currentFrame = s;
-  await goToFrame(s);
-  processInfo.textContent = `Processamento concluído.\nFrames processados: ${results.length}\nIntervalo: ${s} a ${e}`;
-  exportBtn.disabled = false;
-  processBtn.disabled = false;
-  drawPlot();
-  drawPreviewTable();
+  const rm=sr/n, gm=sg/n, bm=sb/n;
+  return { video:videoName, frame, time_s:frame/fps, roi_center_x_px:roi.x, roi_center_y_px:roi.y, roi_radius_px:roi.r, roi_n_pixels:n, R_mean:rm, G_mean:gm, B_mean:bm, gray_mean:(rm+gm+bm)/3 };
+}
+async function processInterval(){
+  if(isLive){ alert('Pare a gravação antes de processar.'); return; }
+  if(!video.src){ alert('Carregue ou grave um vídeo antes de processar.'); return; }
+  const [s,e]=getIntervalFrames(); if(s>e){ alert('Intervalo inválido.'); return; }
+  const roi=getROI(); if(roi.x<0 || roi.y<0 || roi.x>=video.videoWidth || roi.y>=video.videoHeight){ alert('Centro da ROI fora do vídeo.'); return; }
+  processBtn.disabled=true; exportBtn.disabled=true; results=[]; tableWrap.innerHTML=''; plotCtx.clearRect(0,0,plotCanvas.width,plotCanvas.height);
+  const total=e-s+1;
+  for(let f=s; f<=e; f++){ await seekFrame(f); results.push(computeROI(f)); if((f-s)%5===0 || f===e){ processInfo.textContent=`Processando... ${f-s+1}/${total} frames\nFrame atual: ${f}`; await new Promise(r=>setTimeout(r,0)); } }
+  await goToFrame(s); processInfo.textContent=`Processamento concluído.\nFrames processados: ${results.length}\nIntervalo: ${s} a ${e}`; processBtn.disabled=false; exportBtn.disabled=false; drawPlot(); drawTable();
+}
+function drawPlot(){
+  const ctx=plotCtx,w=plotCanvas.width,h=plotCanvas.height; ctx.clearRect(0,0,w,h); ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); if(!results.length) return;
+  const m={l:52,r:18,t:20,b:38}; const xs=results.map(r=>r.time_s); const vals=[]; results.forEach(r=>vals.push(r.R_mean,r.G_mean,r.B_mean));
+  const xmin=Math.min(...xs), xmax=Math.max(...xs), ymin=Math.min(...vals), ymax=Math.max(...vals); const xspan=xmax-xmin||1, yspan=ymax-ymin||1;
+  const px=x=>m.l+(x-xmin)/xspan*(w-m.l-m.r), py=y=>h-m.b-(y-ymin)/yspan*(h-m.t-m.b);
+  ctx.strokeStyle='#d0d7de'; ctx.beginPath(); ctx.moveTo(m.l,m.t); ctx.lineTo(m.l,h-m.b); ctx.lineTo(w-m.r,h-m.b); ctx.stroke();
+  ctx.fillStyle='#24292f'; ctx.font='12px Arial'; ctx.fillText('Tempo (s)', w/2-25,h-8); ctx.save(); ctx.translate(14,h/2+35); ctx.rotate(-Math.PI/2); ctx.fillText('Intensidade média',0,0); ctx.restore();
+  function line(ch,c){ ctx.strokeStyle=c; ctx.lineWidth=1.5; ctx.beginPath(); results.forEach((r,i)=>{ const x=px(r.time_s), y=py(r[ch]); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke(); }
+  line('R_mean','#d1242f'); line('G_mean','#1a7f37'); line('B_mean','#0969da'); ctx.fillStyle='#d1242f'; ctx.fillText('R',w-80,20); ctx.fillStyle='#1a7f37'; ctx.fillText('G',w-55,20); ctx.fillStyle='#0969da'; ctx.fillText('B',w-30,20);
+}
+function drawTable(){
+  const prev=results.slice(0,10); let html='<table><thead><tr><th>frame</th><th>time_s</th><th>R_mean</th><th>G_mean</th><th>B_mean</th><th>gray_mean</th></tr></thead><tbody>';
+  prev.forEach(r=> html+=`<tr><td>${r.frame}</td><td>${fmt(r.time_s,3)}</td><td>${fmt(r.R_mean,3)}</td><td>${fmt(r.G_mean,3)}</td><td>${fmt(r.B_mean,3)}</td><td>${fmt(r.gray_mean,3)}</td></tr>`);
+  html+='</tbody></table>'; if(results.length>10) html+=`<p class="small">Mostrando 10 primeiras linhas de ${results.length}. O CSV exporta todas.</p>`; tableWrap.innerHTML=html;
+}
+function exportCSV(){
+  if(!results.length) return; const cols=['video','frame','time_s','roi_center_x_px','roi_center_y_px','roi_radius_px','roi_n_pixels','R_mean','G_mean','B_mean','gray_mean']; const lines=[cols.join(';')];
+  results.forEach(r=> lines.push(cols.map(c=> typeof r[c]==='number'?String(r[c].toFixed(6)).replace('.',','):String(r[c]).replaceAll(';',',')).join(';')) );
+  const blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(videoName||'rgb_video').replace(/\.[^.]+$/,'')+'_rgb_frames.csv'; document.body.appendChild(a); a.click(); a.remove();
 }
 
-function drawPlot() {
-  const ctx = plotCtx;
-  const w = plotCanvas.width;
-  const h = plotCanvas.height;
-  ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, w, h);
-  if (!results.length) return;
+// ROI interaction
+function canvasToVideo(ev){ const rect=displayCanvas.getBoundingClientRect(); return { x:Math.round((ev.clientX-rect.left)/displayScale), y:Math.round((ev.clientY-rect.top)/displayScale) }; }
+displayCanvas.addEventListener('mousedown',ev=>{ if(roiLocked) return; const p=canvasToVideo(ev); const roi=getROI(); const dx=p.x-roi.x, dy=p.y-roi.y; if(dx*dx+dy*dy <= roi.r*roi.r){ draggingROI=true; } else { setROI(p.x,p.y); draggingROI=true; } });
+window.addEventListener('mousemove',ev=>{ if(!draggingROI || roiLocked) return; const p=canvasToVideo(ev); setROI(p.x,p.y); });
+window.addEventListener('mouseup',()=>{ draggingROI=false; });
+displayCanvas.addEventListener('wheel',ev=>{ if(roiLocked) return; ev.preventDefault(); const roi=getROI(); const nr=Math.max(1, roi.r + (ev.deltaY<0?2:-2)); setROI(roi.x,roi.y,nr); });
 
-  const margin = { left: 52, right: 18, top: 20, bottom: 38 };
-  const xs = results.map(r => r.time_s);
-  const vals = [];
-  results.forEach(r => { vals.push(r.R_mean, r.G_mean, r.B_mean); });
-  const xmin = Math.min(...xs), xmax = Math.max(...xs);
-  const ymin = Math.min(...vals), ymax = Math.max(...vals);
-  const xSpan = xmax - xmin || 1;
-  const ySpan = ymax - ymin || 1;
-
-  const px = x => margin.left + ((x - xmin) / xSpan) * (w - margin.left - margin.right);
-  const py = y => h - margin.bottom - ((y - ymin) / ySpan) * (h - margin.top - margin.bottom);
-
-  ctx.strokeStyle = '#d0d7de';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(margin.left, margin.top);
-  ctx.lineTo(margin.left, h - margin.bottom);
-  ctx.lineTo(w - margin.right, h - margin.bottom);
-  ctx.stroke();
-
-  ctx.fillStyle = '#24292f';
-  ctx.font = '12px Arial';
-  ctx.fillText('Tempo (s)', w/2 - 25, h - 8);
-  ctx.save();
-  ctx.translate(14, h/2 + 35);
-  ctx.rotate(-Math.PI/2);
-  ctx.fillText('Intensidade média', 0, 0);
-  ctx.restore();
-
-  function line(channel, color) {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    results.forEach((r, i) => {
-      const x = px(r.time_s);
-      const y = py(r[channel]);
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-  }
-  line('R_mean', '#d1242f');
-  line('G_mean', '#1a7f37');
-  line('B_mean', '#0969da');
-
-  ctx.fillStyle = '#d1242f'; ctx.fillText('R', w - 80, 20);
-  ctx.fillStyle = '#1a7f37'; ctx.fillText('G', w - 55, 20);
-  ctx.fillStyle = '#0969da'; ctx.fillText('B', w - 30, 20);
-}
-
-function drawPreviewTable() {
-  if (!results.length) return;
-  const preview = results.slice(0, 10);
-  let html = '<table><thead><tr><th>frame</th><th>time_s</th><th>R_mean</th><th>G_mean</th><th>B_mean</th><th>gray_mean</th></tr></thead><tbody>';
-  preview.forEach(r => {
-    html += `<tr><td>${r.frame}</td><td>${fmt(r.time_s, 3)}</td><td>${fmt(r.R_mean, 3)}</td><td>${fmt(r.G_mean, 3)}</td><td>${fmt(r.B_mean, 3)}</td><td>${fmt(r.gray_mean, 3)}</td></tr>`;
-  });
-  html += '</tbody></table>';
-  if (results.length > 10) html += `<p class="small">Mostrando 10 primeiras linhas de ${results.length}. O CSV exporta todas.</p>`;
-  tableWrap.innerHTML = html;
-}
-
-function exportCSV() {
-  if (!results.length) return;
-  const cols = ['video','frame','time_s','roi_center_x_px','roi_center_y_px','roi_radius_px','roi_n_pixels','R_mean','G_mean','B_mean','gray_mean'];
-  const lines = [cols.join(';')];
-  results.forEach(r => {
-    const row = cols.map(c => {
-      const v = r[c];
-      if (typeof v === 'number') return String(v.toFixed(6)).replace('.', ',');
-      return String(v).replaceAll(';', ',');
-    });
-    lines.push(row.join(';'));
-  });
-  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
-  const a = document.createElement('a');
-  const baseName = videoName ? videoName.replace(/\.[^.]+$/, '') : 'rgb_video';
-  a.href = URL.createObjectURL(blob);
-  a.download = `${baseName}_rgb_frames.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
-
-videoInput.addEventListener('change', () => {
-  const file = videoInput.files[0];
-  if (!file) return;
-  videoName = file.name;
-  if (videoURL) URL.revokeObjectURL(videoURL);
-  videoURL = URL.createObjectURL(file);
-  video.src = videoURL;
-  video.load();
-  results = [];
-  exportBtn.disabled = true;
-  tableWrap.innerHTML = '';
-});
-
-video.addEventListener('loadedmetadata', async () => {
-  updateFps();
-  videoInfo.textContent = `Arquivo: ${videoName}\nResolução: ${video.videoWidth} x ${video.videoHeight} px\nDuração: ${video.duration.toFixed(3)} s\nFPS usado: ${fps}`;
-  processBtn.disabled = false;
-  await goToFrame(0);
-  updateROIInfo();
-});
-
-frameSlider.addEventListener('input', async () => {
-  await goToFrame(Number(frameSlider.value));
-});
-
-fpsInput.addEventListener('change', () => {
-  updateFps();
-  videoInfo.textContent = video.src ? `Arquivo: ${videoName}\nResolução: ${video.videoWidth} x ${video.videoHeight} px\nDuração: ${video.duration.toFixed(3)} s\nFPS usado: ${fps}` : 'Nenhum vídeo carregado.';
-});
-
-displayCanvas.addEventListener('click', (ev) => {
-  if (!video.videoWidth) return;
-  const rect = displayCanvas.getBoundingClientRect();
-  const x = Math.round((ev.clientX - rect.left) / displayScale);
-  const y = Math.round((ev.clientY - rect.top) / displayScale);
-  roiX.value = x;
-  roiY.value = y;
-  updateROIInfo();
-});
-
-document.getElementById('applyRoiBtn').addEventListener('click', updateROIInfo);
-document.getElementById('setStartBtn').addEventListener('click', () => {
-  startFrame.value = currentFrame;
-  startTime.value = (currentFrame / fps).toFixed(3);
-});
-document.getElementById('setEndBtn').addEventListener('click', () => {
-  endFrame.value = currentFrame;
-  endTime.value = (currentFrame / fps).toFixed(3);
-});
-processBtn.addEventListener('click', processInterval);
-exportBtn.addEventListener('click', exportCSV);
-
+openCameraBtn.addEventListener('click',openCamera); startRecBtn.addEventListener('click',startRecording); stopRecBtn.addEventListener('click',stopRecording);
+document.getElementById('unlockRoiBtn').addEventListener('click',()=>{ roiLocked=false; updateROIInfo(); });
+document.getElementById('lockRoiBtn').addEventListener('click',()=>{ roiLocked=true; updateROIInfo(); });
+document.getElementById('defaultRoiBtn').addEventListener('click',()=>setROI(365,380,35));
+document.getElementById('increaseRoiBtn').addEventListener('click',()=>{ const r=getROI(); setROI(r.x,r.y,r.r+5); });
+document.getElementById('decreaseRoiBtn').addEventListener('click',()=>{ const r=getROI(); setROI(r.x,r.y,Math.max(1,r.r-5)); });
+roiSlider.addEventListener('input',()=>{ const r=getROI(); setROI(r.x,r.y,+roiSlider.value); });
+roiR.addEventListener('change',()=>{ const r=getROI(); roiSlider.value=r.r; updateROIInfo(); }); roiX.addEventListener('change',updateROIInfo); roiY.addEventListener('change',updateROIInfo); fpsInput.addEventListener('change',()=>{ updateFPS(); updateVideoInfo(); });
+frameSlider.addEventListener('input',()=>goToFrame(+frameSlider.value));
+document.getElementById('setStartBtn').addEventListener('click',()=>{ startFrame.value=currentFrame; startTime.value=(currentFrame/fps).toFixed(3); });
+document.getElementById('setEndBtn').addEventListener('click',()=>{ endFrame.value=currentFrame; endTime.value=(currentFrame/fps).toFixed(3); });
+processBtn.addEventListener('click',processInterval); exportBtn.addEventListener('click',exportCSV);
 updateROIInfo();
 </script>
 </body>
